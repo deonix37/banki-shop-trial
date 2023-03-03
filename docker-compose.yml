@@ -1,0 +1,44 @@
+version: '3'
+services:
+  php:
+    image: yiisoftware/yii2-php:8.1-apache
+    volumes:
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      - ./:/app:delegated
+    ports:
+      - '80:80'
+    depends_on:
+      - mysql
+    networks:
+      - default
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_DATABASE=banki_shop_trial
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=user
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - "dbdata:/var/lib/mysql"
+    networks:
+      - default
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - '8888:80'
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+    depends_on:
+      - mysql
+networks:
+  default:
+    driver: bridge
+volumes:
+  dbdata:
+    driver: local
